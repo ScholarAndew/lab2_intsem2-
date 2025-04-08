@@ -4,7 +4,7 @@ require_once __DIR__ . "/vendor/autoload.php";
 $client = new MongoDB\Client;
 $collection = $client->dbforlab->literature;
 
-$wasSubmitted = !empty($_GET); // форма была реально отправлена
+$wasSubmitted = !empty($_GET); 
 
 $publisher = $_GET['publisher'] ?? '';
 $yearFrom = $_GET['yearFrom'] ?? '';
@@ -104,7 +104,16 @@ if ($wasSubmitted) {
     }
 
     if (!empty($author)) {
-        $filter['authors'] = $author;
+        if (!empty($author)) {
+            $author = trim($author); 
+            $filter['authors'] = [
+                '$elemMatch' => [
+                    '$regex' => $author,
+                    '$options' => 'i' 
+                ]
+            ];
+        }
+        
     }
 
     $cursor = $collection->find($filter);
