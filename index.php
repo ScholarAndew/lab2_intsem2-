@@ -12,13 +12,31 @@ $yearTo = $_GET['yearTo'] ?? '';
 $author = $_GET['author'] ?? '';
 
 function displayResults($cursor) {
+    $fieldNames = [
+        'type' => 'Тип',
+        'title' => 'Назва',
+        'isbn' => 'ISBN',
+        'publisher' => 'Видавництво',
+        'year' => 'Рік видання',
+        'pages' => 'Кількість сторінок',
+        'authors' => 'Автор(и)',
+        'hasCD' => 'CD-диск',
+        'issueNumber' => 'Номер випуску'
+    ];
+
     echo "<div class='results'>";
     foreach ($cursor as $doc) {
         $doc = json_decode(json_encode($doc), true);
         echo "<div class='card'>";
         foreach ($doc as $key => $value) {
-            echo "<div class='field'><strong>$key:</strong> ";
-            if (is_array($value)) {
+            if ($key === '_id') continue;
+
+            $label = $fieldNames[$key] ?? $key;
+
+            echo "<div class='field'><strong>$label:</strong> ";
+            if ($key === 'hasCD') {
+                echo $value ? "Присутній CD-диск" : "CD-диск відсутній";
+            } elseif (is_array($value)) {
                 echo implode(", ", $value);
             } else {
                 echo htmlspecialchars((string)$value);
